@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Simple jQuery drop-down menu compatible with smartphones</title>
+
+<meta charset="utf-8">
+
+<style type="text/css">
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+.menu_header {
+    cursor: default;
+}
+.menu_header:hover {
+    background-color: #eee;
+}
+.menu_content {
+    display: none;
+    background-color: #eee;
+    padding: 10px;
+}
+
+</style>
+
+<script type="text/javascript" src="jquery-2.0.3.min.js"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function () {
+
+    (function ($) {
+        this.active_item = null;
+
+        this.hide_timeout = 100;
+        this.hide_timer = 0;
+
+        this.open_item = function (obj_header, obj_content) {
+            this.active_item = obj_content[0];
+            var pos = obj_header.offset();
+            obj_content.css({left: pos.left, top: pos.top + obj_header.height()}).stop().fadeIn();
+        }
+
+        var _menu = this;
+
+        $(".menu_header").each(function () {
+            if (this.id) {
+                var obj_content = $("#" + this.id + "_content");
+                if (obj_content.length > 0) {
+                    obj_content.appendTo($("body")).css({position: "absolute"});
+
+                    var obj_header = $(this);
+
+                    obj_header
+                        .mouseover(function () {
+                            clearTimeout(_menu.hide_timer);
+                            _menu.hide_timer = 0;
+
+                            if (_menu.active_item != null && _menu.active_item != obj_content[0]) {
+                                $(_menu.active_item).stop().hide();
+                                _menu.active_item = null;
+                            }
+
+                            if (_menu.active_item == null) {
+                                _menu.open_item(obj_header, obj_content);
+                            }
+                        })
+                        .mouseout(function () {
+                            _menu.hide_timer = setTimeout(
+                                function () {
+                                    _menu.hide_timer = 0;
+                                    $(_menu.active_item).stop().fadeOut();
+                                    _menu.active_item = null;
+                                },
+                                _menu.hide_timeout
+                            );
+                        })
+                        .click(function () {
+                            if (_menu.active_item == null) {
+                                _menu.open_item(obj_header, obj_content);
+                            }
+                            else {
+                                $(_menu.active_item).stop().fadeOut();
+                                _menu.active_item = null;
+                            }
+                        });
+
+                    obj_content
+                        .mouseover(function () {
+                            clearTimeout(_menu.hide_timer);
+                            _menu.hide_timer = 0;
+                        })
+                        .mouseout(function () {
+                            _menu.hide_timer = setTimeout(
+                                function () {
+                                    _menu.hide_timer = 0;
+                                    $(_menu.active_item).stop().fadeOut();
+                                    _menu.active_item = null;
+                                },
+                                _menu.hide_timeout
+                            );
+                        });
+                }
+            }
+        });
+    })(jQuery);
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div class="menu">
+    <span class="menu_header" id="menu_home">Home</span>
+    <span class="menu_header" id="menu_blog">Blog</span>
+    <span class="menu_header" id="menu_about">About</span>
+    <span class="menu_header" id="menu_contact">Contact</span>
+</div>
+
+<div class="menu_content" id="menu_home_content">
+    This is the content panel for the Home menu item
+</div>
+
+<div class="menu_content" id="menu_about_content">
+    This is the content panel for the About menu item
+</div>
+
+<div class="menu_content" id="menu_contact_content">
+    This is the content panel for the Contact menu item
+</div>
+
+</body>
+
+</html>

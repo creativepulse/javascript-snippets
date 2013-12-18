@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Simple jQuery drop-down menu compatible with smartphones</title>
+
+<meta charset="utf-8">
+
+<style type="text/css">
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Simple jQuery drop-down menu compatible with smartphones</h1>
+
+<p>One of the most essential things in a website is a menu. In this article you will read about a very easy way to create drop-down menus that also work nicely with smartphones and tablets.</p>
+
+<p>The logic behind the script is simple. We have menu header elements and menu contents. Menu headers are visible. Menu contents become visible when the mouse moves over the headers or when the user clicks on them, like in a touch screen case.</p>
+
+<p>What connects headers with contents is their HTML ID. For example there is a header element named <tt>menu_home</tt> and a content element named <tt>menu_home_content</tt>. The way the script scans the page for elements to connect is through the CSS class of the header elements. In this script, menu headers must have a CSS class named <tt>menu_header</tt>.</p>
+
+<p>So practically speaking, in order to make the system work you have to add a header element with a HTML ID of your choice, a content element with an ID that adds &quot;_content&quot; to the header ID and a CSS class <tt>menu_header</tt>.</p>
+
+
+<h2>HTML example</h2>
+
+<pre class="sunlight-highlight-xml">&lt;div class=&quot;menu&quot;&gt;
+    &lt;span class=&quot;menu_header&quot; id=&quot;menu_home&quot;&gt;Home&lt;/span&gt;
+    &lt;span class=&quot;menu_header&quot; id=&quot;menu_blog&quot;&gt;Blog&lt;/span&gt;
+    &lt;span class=&quot;menu_header&quot; id=&quot;menu_about&quot;&gt;About&lt;/span&gt;
+    &lt;span class=&quot;menu_header&quot; id=&quot;menu_contact&quot;&gt;Contact&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;menu_content&quot; id=&quot;menu_home_content&quot;&gt;
+    &lt;p&gt;This is the content panel for the Home menu item&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;menu_content&quot; id=&quot;menu_about_content&quot;&gt;
+    &lt;p&gt;This is the content panel for the About menu item&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;menu_content&quot; id=&quot;menu_contact_content&quot;&gt;
+    &lt;p&gt;This is the content panel for the Contact menu item&lt;/p&gt;
+&lt;/div&gt;</pre>
+
+<p>One small detail you may notice in the example above is that the content for the Blog menu item is missing. This may be a valid case of a menu that does not have a content. The script searches for content, if there isn't one it's not a problem.</p>
+
+
+<p><strong>Compatibility with touch screen devices</strong>
+<br/>The key to make a traditional drop-down menu compatible to smartphones and tablets is simply make it responsive to mouse clicks. The script in this article does that. Mouse clicks open or close menus just as mouse-over or mouse-out events do.</p>
+
+
+<h2>jQuery script</h2>
+
+<pre class="sunlight-highlight-javascript">jQuery(document).ready(function () {
+
+    (function ($) {
+        this.active_item = null;
+
+        this.hide_timeout = 100;
+        this.hide_timer = 0;
+
+        this.open_item = function (obj_header, obj_content) {
+            this.active_item = obj_content[0];
+            var pos = obj_header.offset();
+            obj_content.css({left: pos.left, top: pos.top + obj_header.height()}).stop().fadeIn();
+        }
+
+        var _menu = this;
+
+        $(&quot;.menu_header&quot;).each(function () {
+            if (this.id) {
+                var obj_content = $(&quot;#&quot; + this.id + &quot;_content&quot;);
+                if (obj_content.length &gt; 0) {
+                    obj_content.appendTo($(&quot;body&quot;)).css({position: &quot;absolute&quot;});
+
+                    var obj_header = $(this);
+
+                    obj_header
+                        .mouseover(function () {
+                            clearTimeout(_menu.hide_timer);
+                            _menu.hide_timer = 0;
+
+                            if (_menu.active_item != null && _menu.active_item != obj_content[0]) {
+                                $(_menu.active_item).stop().hide();
+                                _menu.active_item = null;
+                            }
+
+                            if (_menu.active_item == null) {
+                                _menu.open_item(obj_header, obj_content);
+                            }
+                        })
+                        .mouseout(function () {
+                            _menu.hide_timer = setTimeout(
+                                function () {
+                                    _menu.hide_timer = 0;
+                                    $(_menu.active_item).stop().fadeOut();
+                                    _menu.active_item = null;
+                                },
+                                _menu.hide_timeout
+                            );
+                        })
+                        .click(function () {
+                            if (_menu.active_item == null) {
+                                _menu.open_item(obj_header, obj_content);
+                            }
+                            else {
+                                $(_menu.active_item).stop().fadeOut();
+                                _menu.active_item = null;
+                            }
+                        });
+
+                    obj_content
+                        .mouseover(function () {
+                            clearTimeout(_menu.hide_timer);
+                            _menu.hide_timer = 0;
+                        })
+                        .mouseout(function () {
+                            _menu.hide_timer = setTimeout(
+                                function () {
+                                    _menu.hide_timer = 0;
+                                    $(_menu.active_item).stop().fadeOut();
+                                    _menu.active_item = null;
+                                },
+                                _menu.hide_timeout
+                            );
+                        });
+                }
+            }
+        });
+    })(jQuery);
+
+});</pre>
+
+</body>
+</html>
