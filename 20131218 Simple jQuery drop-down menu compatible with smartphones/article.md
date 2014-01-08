@@ -119,3 +119,5 @@ The key to make a traditional drop-down menu compatible to smartphones and table
 
     });
 
+This article was originally published in [http://www.creativepulse.gr/en/blog/2013/simple-jquery-drop-down-menu-compatible-with-smartphones](http://www.creativepulse.gr/en/blog/2013/simple-jquery-drop-down-menu-compatible-with-smartphones)
+
